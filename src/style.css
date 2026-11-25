@@ -1,0 +1,148 @@
+:root {
+  --bg: #fff; --fg: #000; --muted: #777; --line: #e4e4e4; --surface: #f4f4f4; --outline: none;
+  color-scheme: light;
+}
+:root[data-theme="dark"] { --bg: #000; --fg: #fff; --muted: #888; --line: #262626; --surface: #121212; --outline: drop-shadow(0 0 1px rgb(255 255 255 / .55)) drop-shadow(0 0 10px rgb(255 255 255 / .07)); color-scheme: dark; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #000; --fg: #fff; --muted: #888; --line: #262626; --surface: #121212; --outline: drop-shadow(0 0 1px rgb(255 255 255 / .55)) drop-shadow(0 0 10px rgb(255 255 255 / .07)); color-scheme: dark; }
+}
+
+[hidden] { display: none !important; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--bg); color: var(--fg); }
+body {
+  font: 500 16px/1.45 ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 1100px; margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 32px) 28px calc(env(safe-area-inset-bottom) + 96px);
+}
+header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 28px; }
+h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
+h2 {
+  font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  margin: 40px 0 14px; padding-top: 14px; border-top: 1px solid var(--line);
+}
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.empty { color: var(--muted); padding: 80px 0; text-align: center; }
+
+#ajustes { max-width: 560px; }
+label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 14px; }
+input:not([type="file"]) {
+  display: block; width: 100%; margin-top: 6px; padding: 11px 12px;
+  font: inherit; font-size: 15px; color: var(--fg); background: transparent;
+  border: 1px solid var(--line); border-radius: 0; outline: none;
+}
+input:focus { border-color: var(--fg); }
+
+button, .button {
+  display: inline-block; font: inherit; font-size: 15px; color: var(--fg); background: transparent;
+  font-weight: 700; border: 1.5px solid var(--fg); border-radius: 0; padding: 10px 20px; cursor: pointer; margin: 0;
+}
+button:active, .button:active, button.on { background: var(--fg); color: var(--bg); }
+button:disabled { opacity: .4; cursor: default; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.seg { display: flex; }
+.seg button + button { border-left: 0; }
+
+.primary { background: var(--fg); color: var(--bg); }
+.push { margin-left: auto; }
+
+.chips { display: flex; gap: 8px; overflow-x: auto; margin: -8px 0 24px; scrollbar-width: none; }
+.chips button { flex: none; padding: 7px 14px; font-size: 13px; border-color: var(--line); border-radius: 99px; }
+.chips button.on { border-color: var(--fg); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+.card { padding: 0; border: 0; text-align: left; background: none; }
+.card:active { background: none; color: var(--fg); opacity: .7; }
+.card .pic { aspect-ratio: 3 / 4; padding: 12px; background: var(--surface); border: 1px solid var(--line); }
+.card img { width: 100%; height: 100%; object-fit: contain; display: block; filter: var(--outline); }
+.card span { display: block; font-size: 13px; padding: 8px 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+dialog {
+  width: min(900px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 28px;
+  background: var(--bg); color: var(--fg); border: 1.5px solid var(--fg);
+}
+dialog::backdrop { background: rgb(0 0 0 / .6); }
+#prenda-form { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+@media (max-width: 700px) { #prenda-form { grid-template-columns: 1fr; } }
+.prenda-foto img { width: 100%; aspect-ratio: 3 / 4; object-fit: contain; padding: 10px; background: var(--surface); display: block; border: 1px solid var(--line); margin-bottom: 12px; }
+#prenda-status { font-weight: 700; margin: 0 0 12px; animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .4; } }
+select {
+  display: block; width: 100%; margin-top: 6px; padding: 11px 12px; font: inherit; font-size: 15px;
+  color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 0;
+}
+
+
+#tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center;
+  background: var(--bg); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+#tabs button {
+  flex: 0 1 140px; border: 0; padding: 18px 8px; font-size: 12px;
+  font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); background: none;
+}
+#tabs button.on { color: var(--fg); background: none; }
+
+/* Probador: mannequin layout. Side zones (accessory, outer layer) sit next to the torso. */
+#maniqui {
+  display: grid; max-width: 860px; margin: 0 auto; gap: 2px 12px; align-items: center;
+  grid-template-columns: 1fr minmax(0, 1.5fr) 1fr;
+  grid-template-areas: ". cabeza ." "accesorio torso capa" ". piernas ." ". pies .";
+}
+.slot { display: flex; align-items: center; height: var(--h); }
+[data-slot=cabeza] { --h: 110px; }
+[data-slot=torso] { --h: 280px; }
+[data-slot=piernas] { --h: 300px; }
+[data-slot=pies] { --h: 110px; }
+[data-slot=accesorio], [data-slot=capa] { --h: 210px; }
+.slot .ver { flex: 1; min-width: 0; height: 100%; display: flex; align-items: center; justify-content: center; padding: 6px 0; }
+.slot img { max-width: 100%; max-height: 100%; object-fit: contain; filter: var(--outline); }
+.slot-empty {
+  width: 70%; height: 70%; display: flex; align-items: center; justify-content: center;
+  border: 1.5px dashed var(--line); color: var(--muted); font-size: 11px; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.arrow { border: 0; padding: 10px 6px; font-size: 30px; line-height: 1; font-weight: 400; color: var(--muted); background: none; }
+.arrow:active { background: none; color: var(--fg); }
+.arrow:disabled { opacity: .15; }
+
+/* Outfits: cards with a mini mannequin (same zones as the Probador). */
+#outfits-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 28px 20px; }
+.mini {
+  display: grid; width: 100%; aspect-ratio: 4 / 5; padding: 14px; gap: 4px 8px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line);
+  grid-template-columns: 1fr 1.5fr 1fr; grid-template-rows: 1fr 2.6fr 2.8fr 1fr;
+  grid-template-areas: ". cabeza ." "accesorio torso capa" ". piernas ." ". pies .";
+}
+.mini:active { background: var(--surface); opacity: .7; }
+.mini img { width: 100%; height: 100%; min-height: 0; object-fit: contain; filter: var(--outline); }
+.outfit-info { display: flex; flex-direction: column; padding: 10px 0; }
+.outfit .row button { padding: 7px 12px; font-size: 13px; }
+
+/* Chat */
+#chat { max-width: 760px; margin: 0 auto; }
+#chat-log { display: flex; flex-direction: column; gap: 14px; }
+.msg { margin: 0; max-width: 85%; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.user { align-self: flex-end; background: var(--fg); color: var(--bg); padding: 10px 14px; }
+.msg.bot { align-self: flex-start; }
+.msg.info { align-self: flex-start; color: var(--muted); font-size: 13px; }
+#chat-status { margin-top: 14px; animation: pulse 1.4s ease-in-out infinite; }
+.outfit-chat { width: 260px; }
+.outfit-chat .row { align-items: center; padding-top: 10px; }
+.outfit-chat .row button { padding: 7px 14px; font-size: 13px; }
+#chat-form {
+  position: sticky; bottom: calc(56px + env(safe-area-inset-bottom)); display: flex; gap: 8px;
+  margin-top: 24px; padding: 12px 0; background: var(--bg);
+}
+#chat-form input { margin: 0; }
+
+/* In-app alert/confirm/prompt */
+#ui { width: min(420px, calc(100vw - 32px)); }
+#ui p { margin: 0 0 18px; white-space: pre-wrap; }
+#ui input { margin: 0 0 18px; }

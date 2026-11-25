@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Armario Digital</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <main>
+    <section id="armario" class="view">
+      <header>
+        <h1>Armario</h1><span class="muted" id="armario-count"></span>
+        <label class="button primary push">Añadir<input type="file" id="add-input" accept="image/*" hidden></label>
+      </header>
+      <div id="filtros" class="chips"></div>
+      <div id="armario-grid" class="grid"></div>
+      <p id="armario-empty" class="empty" hidden></p>
+    </section>
+
+    <dialog id="prenda">
+      <form id="prenda-form">
+        <div class="prenda-foto">
+          <img id="prenda-img" alt="">
+          <p id="prenda-status" hidden></p>
+          <div class="row">
+            <button type="button" id="prenda-retry">Reintentar</button>
+            <button type="button" id="prenda-original">Usar foto original</button>
+          </div>
+        </div>
+        <div class="prenda-campos">
+          <label>Categoría<select name="categoria" required></select></label>
+          <label>Tipo<input name="tipo" placeholder="Sudadera con capucha"></label>
+          <label>Color<input name="color"></label>
+          <label>Estilo<input name="estilo"></label>
+          <label>Temporada<select name="temporada"></select></label>
+          <label>Descripción<input name="descripcion"></label>
+          <div class="row">
+            <button class="primary">Guardar</button>
+            <button type="button" id="prenda-cancel">Cancelar</button>
+            <button type="button" id="prenda-delete" class="push">Eliminar</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <section id="probador" class="view" hidden>
+      <header><h1>Probador</h1><button id="outfit-save" class="primary push">Guardar outfit</button></header>
+      <div id="maniqui"></div>
+      <p id="probador-empty" class="empty" hidden>Añade prendas en el Armario para probártelas aquí.</p>
+    </section>
+
+    <section id="outfits" class="view" hidden>
+      <header><h1>Outfits</h1></header>
+      <div id="outfits-grid"></div>
+      <p id="outfits-empty" class="empty" hidden>Aún no hay outfits. Crea uno en el Probador o pídeselo al Chat.</p>
+    </section>
+
+    <section id="chat" class="view" hidden>
+      <header><h1>Chat</h1><button id="chat-nuevo" class="push">Nueva</button></header>
+      <p id="chat-empty" class="empty">Pregúntame por tu ropa. Por ejemplo: «Estoy en Málaga, hazme un outfit para mañana».</p>
+      <div id="chat-log"></div>
+      <p id="chat-status" class="msg info" hidden></p>
+      <form id="chat-form">
+        <input id="chat-input" placeholder="Escribe un mensaje…" autocomplete="off">
+        <button class="primary">Enviar</button>
+      </form>
+    </section>
+
+    <section id="ajustes" class="view" hidden>
+      <header><h1>Ajustes</h1></header>
+
+      <h2>OpenRouter</h2>
+      <label>Clave API<input type="password" data-setting="apiKey" placeholder="sk-or-…" autocomplete="off"></label>
+      <label>Modelo · fondo blanco<input data-setting="modelImage" spellcheck="false"></label>
+      <label>Modelo · etiquetado<input data-setting="modelTag" spellcheck="false"></label>
+      <label>Modelo · chat<input data-setting="modelChat" spellcheck="false"></label>
+      <p class="muted small">La clave se guarda solo en este dispositivo y no se incluye en las copias.</p>
+
+      <h2>Apariencia</h2>
+      <div class="seg" id="theme">
+        <button data-theme="auto">Sistema</button><button data-theme="light">Claro</button><button data-theme="dark">Oscuro</button>
+      </div>
+
+      <h2>Copia de seguridad</h2>
+      <p class="muted small" id="backup-info"></p>
+      <div class="row">
+        <button id="export">Exportar</button>
+        <label class="button">Importar<input type="file" id="import" hidden></label>
+      </div>
+      <p class="muted small">En Windows la copia se guarda en iCloud Drive (o en Documentos); en el iPad, en Archivos → En mi iPad → Armario Digital. Ábrela en el otro dispositivo con «Importar», que sustituye su armario.</p>
+    </section>
+  </main>
+
+  <nav id="tabs">
+    <button data-view="armario">Armario</button>
+    <button data-view="probador">Probador</button>
+    <button data-view="outfits">Outfits</button>
+    <button data-view="chat">Chat</button>
+    <button data-view="ajustes">Ajustes</button>
+  </nav>
+</body>
+</html>

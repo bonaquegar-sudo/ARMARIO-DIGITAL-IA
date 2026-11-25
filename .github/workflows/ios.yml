@@ -1,0 +1,69 @@
+# Builds an UNSIGNED .ipa on a cloud Mac and publishes it as the "ultima" release.
+# Install it on the iPad with SideStore / Sideloadly (they sign it with your Apple ID).
+name: iPad (IPA)
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ios
+  cancel-in-progress: true
+
+jobs:
+  ipa:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+
+      # The Xcode project is generated here (needs macOS); src-tauri/gen is not in git.
+      - name: Generar proyecto iOS
+        run: |
+          npx tauri ios init --ci
+          npx tauri icon icon.svg
+
+      - name: Compilar IPA sin firmar
+        run: npx tauri ios build --ci --no-sign --target aarch64
+
+      - name: Localizar IPA
+        run: |
+          IPA=$(find src-tauri/gen/apple -name '*.ipa' | head -1)
+          test -n "$IPA" || { echo "No se generó ninguna .ipa"; find src-tauri/gen/apple/build -maxdepth 3; exit 1; }
+          cp "$IPA" ArmarioDigital.ipa
+          ls -lh ArmarioDigital.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ArmarioDigital-ipa
+          path: ArmarioDigital.ipa
+
+      - name: Publicar en Releases (enlace fijo)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete ultima --yes --cleanup-tag || true
+          gh release create ultima ArmarioDigital.ipa \
+            --title "Armario Digital · iPad" \
+            --notes "IPA sin firmar generada desde ${GITHUB_SHA::7}. Instálala con SideStore o Sideloadly." \
+            --target "$GITHUB_SHA"
