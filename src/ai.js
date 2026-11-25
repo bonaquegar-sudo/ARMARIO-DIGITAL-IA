@@ -6,7 +6,9 @@ export const SEASONS = ['Todo el año', 'Verano', 'Invierno', 'Entretiempo'];
 
 async function openrouter(body, path = 'chat/completions') {
   if (!settings.apiKey) throw new Error('Falta la clave de OpenRouter (Ajustes).');
-  const res = await fetch(`https://openrouter.ai/api/v1/${path}`, {
+  // In the app, Rust makes the request: the iOS webview drops the Authorization header on cross-origin fetch.
+  const send = window.__TAURI__?.http?.fetch ?? fetch;
+  const res = await send(`https://openrouter.ai/api/v1/${path}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json', 'X-Title': 'Armario Digital' },
     body: JSON.stringify(body),
