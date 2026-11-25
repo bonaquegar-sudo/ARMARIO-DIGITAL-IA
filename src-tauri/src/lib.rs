@@ -25,6 +25,18 @@ fn guardar_copia(app: AppHandle, nombre: String, datos: String) -> Result<String
 pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![guardar_copia])
+        .setup(|_app| {
+            // iOS: by default the WKWebView scroll view also insets the safe area, so the
+            // CSS env(safe-area-inset-*) gets counted twice (gap under the tab bar).
+            #[cfg(target_os = "ios")]
+            _app.get_webview_window("main").unwrap().with_webview(|wv| unsafe {
+                use objc2::{msg_send, runtime::AnyObject};
+                let web = wv.inner() as *mut AnyObject;
+                let scroll: *mut AnyObject = msg_send![web, scrollView];
+                let _: () = msg_send![scroll, setContentInsetAdjustmentBehavior: 2isize]; // .never
+            })?;
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error al iniciar Armario Digital");
 }

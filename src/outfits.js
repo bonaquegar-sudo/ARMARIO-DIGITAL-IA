@@ -32,21 +32,21 @@ export async function renderOutfits() {
   urls = [];
   outfits.sort((a, b) => b.createdAt - a.createdAt);
 
-  grid.replaceChildren(...outfits.map(o => {
+  grid.replaceChildren(...outfits.map((o, i) => {
     const n = SLOTS.filter(s => byId.has(o.prendas[s.key])).length;
     const card = document.createElement('article');
     card.className = 'outfit';
+    card.style.setProperty('--i', i);
+    // Tap the mannequin to try it on; pencil renames, bin deletes.
     card.innerHTML = `
-      <div class="outfit-info"><b></b><span class="muted small"></span></div>
-      <div class="row">
-        <button data-a="probar">Probar</button><button data-a="renombrar">Renombrar</button>
-        <button data-a="eliminar" class="push">Eliminar</button>
+      <div class="outfit-info"><div><b></b><span class="muted small"></span></div>
+        <button data-a="renombrar" class="icon" aria-label="Renombrar"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button data-a="eliminar" class="icon" aria-label="Eliminar"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>
       </div>`;
     card.prepend(miniOutfit(o.prendas, byId, urls));
     card.querySelector('b').textContent = o.nombre;
     card.querySelector('.muted').textContent =
       `${new Date(o.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} · ${n} ${n === 1 ? 'prenda' : 'prendas'}`;
-    card.querySelector('[data-a=probar]').onclick = () => probarOutfit(o.prendas);
     card.querySelector('[data-a=renombrar]').onclick = async () => {
       const nombre = await pedir('Nuevo nombre:', o.nombre);
       if (!nombre?.trim()) return;

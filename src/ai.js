@@ -22,7 +22,9 @@ export const chat = (messages, tools) => openrouter({ model: settings.modelChat,
 // Chroma background (not white) so the local cut-out also works for white clothes.
 const CATALOG_PROMPT =
   'E-commerce catalog product photo, like a Zara or Bershka online store. Take the garment or accessory from this photo ' +
-  'and show it alone, centered, front view, neatly laid out (ghost mannequin style for clothes), on a perfectly flat solid ' +
+  'and show it alone, centered, front view, neatly laid out (ghost mannequin style for clothes). ' +
+  'Footwear is the exception: show the pair in side profile view, toes pointing left, one shoe slightly behind the other. ' +
+  'Use a perfectly flat solid ' +
   'pure chroma-key green background (#00FF00), even studio lighting, no shadow, no gradient, the item must not touch the image edges. ' +
   'If the item itself is green, use a solid pure magenta background (#FF00FF) instead. Keep the EXACT same item: same color, ' +
   'fabric, texture, prints, logos and proportions. No person, no hanger, no props, no text.';

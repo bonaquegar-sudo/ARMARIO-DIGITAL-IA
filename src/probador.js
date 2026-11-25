@@ -26,6 +26,16 @@ root.innerHTML = SLOTS.map(s => `
     <button class="arrow" data-step="1" aria-label="${s.label}: siguiente">›</button>
   </div>`).join('');
 root.querySelectorAll('.arrow').forEach(b => b.onclick = () => step(b.closest('.slot').dataset.slot, +b.dataset.step));
+// Swipe sideways on a zone to change the item.
+root.querySelectorAll('.slot').forEach(el => {
+  let x0 = null;
+  el.addEventListener('touchstart', e => x0 = e.touches[0].clientX, { passive: true });
+  el.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - x0;
+    if (x0 !== null && Math.abs(dx) > 40 && groups[el.dataset.slot]?.length) step(el.dataset.slot, dx < 0 ? 1 : -1);
+    x0 = null;
+  });
+});
 
 function paint(key) {
   const el = root.querySelector(`[data-slot=${key}]`);
@@ -43,6 +53,10 @@ function step(key, d) {
   sel[key] = ids[(n + d + ids.length) % ids.length];
   remember();
   paint(key);
+  const img = root.querySelector(`[data-slot=${key}] img`);
+  img.className = '';
+  void img.offsetWidth; // restart the slide-in animation
+  img.className = d > 0 ? 'in-r' : 'in-l';
 }
 
 export async function renderProbador() {

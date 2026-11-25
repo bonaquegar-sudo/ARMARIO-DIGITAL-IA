@@ -17,3 +17,6 @@ tauri = { version = "2", features = [] }
 opt-level = "s"
 lto = true
 strip = true
+
+[target.'cfg(target_os = "ios")'.dependencies]
+objc2 = "0.6"

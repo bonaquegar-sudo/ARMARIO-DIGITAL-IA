@@ -20,7 +20,10 @@ function applyTheme(t) {
 // --- Navigation ---
 function show(view) {
   $$('.view').forEach(v => v.hidden = v.id !== view);
-  $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.view === view));
+  $$('#tabs button').forEach((b, n) => {
+    b.classList.toggle('on', b.dataset.view === view);
+    if (b.dataset.view === view) $('#tabs > div').style.setProperty('--i', n);
+  });
   localStorage.setItem('vista', view);
   if (view === 'armario') renderArmario();
   if (view === 'probador') renderProbador();
@@ -42,7 +45,10 @@ async function renderArmario() {
     const b = document.createElement('button');
     b.className = 'card';
     b.innerHTML = `<div class="pic"><img loading="lazy"></div><span></span>`;
-    b.querySelector('img').src = urls[n];
+    b.style.setProperty('--i', n);
+    const img = b.querySelector('img');
+    img.onload = () => img.classList.add('ok');
+    img.src = urls[n];
     b.querySelector('span').textContent = item.tipo || item.categoria;
     b.onclick = () => abrirPrenda(item);
     return b;
@@ -62,8 +68,17 @@ function setImage(blob) {
   const img = $('#prenda-img');
   URL.revokeObjectURL(img.src);
   img.src = URL.createObjectURL(blob);
+  img.classList.remove('aparece');
+  void img.offsetWidth; // restart the reveal animation
+  img.classList.add('aparece');
 }
-const setStatus = t => { $('#prenda-status').textContent = t; $('#prenda-status').hidden = !t; };
+const setStatus = (t, error = false) => {
+  const el = $('#prenda-status');
+  el.textContent = t;
+  el.hidden = !t;
+  el.classList.toggle('shimmer', !error);
+};
+const scanning = on => $('#prenda .foto').classList.toggle('procesando', on);
 const setBusy = on => $$('#prenda-form :is(button, select, input):not(#prenda-cancel)').forEach(e => e.disabled = on);
 const fillForm = t => FIELDS.forEach(f => { if (t[f] != null) $(`#prenda-form [name=${f}]`).value = t[f]; });
 
@@ -96,6 +111,7 @@ async function procesar(id, fondo) {
   setBusy(true);
   try {
     if (fondo) {
+      scanning(true);
       setStatus('Creando foto de catálogo…');
       const url = await ai.fotoCatalogo(draft.original);
       if (id !== run) return;
@@ -103,6 +119,7 @@ async function procesar(id, fondo) {
       const png = await quitarFondo(await (await fetch(url)).blob());
       if (!png) throw new Error('No se pudo quitar el fondo. Pulsa Reintentar o usa la foto original.');
       draft.image = png;
+      scanning(false);
       setImage(draft.image);
     }
     setStatus('Clasificando…');
@@ -112,9 +129,9 @@ async function procesar(id, fondo) {
     fillForm(tags);
     setStatus('');
   } catch (e) {
-    if (id === run) setStatus(e.message);
+    if (id === run) setStatus(e.message, true);
   } finally {
-    if (id === run) setBusy(false);
+    if (id === run) { setBusy(false); scanning(false); }
   }
 }
 
@@ -129,7 +146,7 @@ async function guardarPrenda(e) {
   renderArmario();
 }
 
-function cerrarPrenda() { run++; draft = null; $('#prenda').close(); }
+function cerrarPrenda() { run++; draft = null; scanning(false); $('#prenda').close(); }
 
 async function borrarPrenda() {
   if (!await confirmar('¿Eliminar esta prenda?')) return;

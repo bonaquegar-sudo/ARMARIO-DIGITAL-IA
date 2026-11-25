@@ -76,35 +76,45 @@ async function ejecutar(name, args) {
 // Minimal formatting: escape, **bold**, *italic*, line breaks (CSS pre-wrap).
 const fmt = t => t.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*([^*\n]+)\*/g, '<i>$1</i>');
 
+let shown = Infinity; // messages already on screen: only newer ones animate in
+const el = (tag, className, props) => Object.assign(document.createElement(tag), { className, ...props });
+
 export async function renderChat() {
   const byId = new Map((await db.all('items')).map(i => [i.id, i]));
   urls.forEach(URL.revokeObjectURL);
   urls = [];
-  log.replaceChildren(...hist.flatMap(m => {
-    if (m.role === 'user') return [Object.assign(document.createElement('p'), { className: 'msg user', textContent: m.content })];
-    if (m.role === 'assistant') return m.content?.trim() ? [Object.assign(document.createElement('p'), { className: 'msg bot', innerHTML: fmt(m.content.trim()) })] : [];
-    const r = JSON.parse(m.content);
-    if (m.name === 'consultar_tiempo' && !r.error)
-      return [Object.assign(document.createElement('p'), { className: 'msg info', textContent: `${r.ciudad} · ${r.fecha}: ${r.cielo}, ${r.min}–${r.max} °C, lluvia ${r.lluvia} %, viento ${r.viento} km/h` })];
-    if (m.name === 'guardar_outfit' && r.ok) {
-      const card = document.createElement('div');
-      card.className = 'msg outfit-chat';
-      card.append(miniOutfit(r.prendas, byId, urls));
-      card.insertAdjacentHTML('beforeend', '<div class="row"><b></b><button class="push">Probar</button></div>');
-      card.querySelector('b').textContent = `Guardado: ${r.nombre}`;
-      card.querySelector('button.push').onclick = () => probarOutfit(r.prendas);
-      return [card];
-    }
-    return [];
+  log.replaceChildren(...hist.flatMap((m, n) => {
+    const node = mensaje(m, byId);
+    if (node && n >= shown) node.classList.add('nuevo');
+    return node ? [node] : [];
   }));
+  shown = hist.length;
   $('#chat-empty').hidden = hist.length > 0;
-  log.lastElementChild?.scrollIntoView({ block: 'end' });
+  scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function mensaje(m, byId) {
+  if (m.role === 'user') return el('p', 'msg user', { textContent: m.content });
+  if (m.role === 'assistant') return m.content?.trim() ? el('div', 'msg bot', { innerHTML: fmt(m.content.trim()) }) : null;
+  const r = JSON.parse(m.content);
+  if (m.name === 'consultar_tiempo' && !r.error)
+    return el('p', 'msg info', { textContent: `${r.ciudad} · ${r.fecha} · ${r.cielo} · ${r.min}–${r.max} °C · lluvia ${r.lluvia} %` });
+  if (m.name === 'guardar_outfit' && r.ok) {
+    const card = el('div', 'msg outfit-chat');
+    card.append(miniOutfit(r.prendas, byId, urls));
+    card.insertAdjacentHTML('beforeend', '<div class="row"><b></b><button class="push">Probar</button></div>');
+    card.querySelector('b').textContent = r.nombre;
+    card.querySelector('button.push').onclick = () => probarOutfit(r.prendas);
+    return card;
+  }
+  return null;
 }
 
 function setBusy(on, texto = 'Pensando…') {
-  $('#chat-status').textContent = texto;
+  $('#chat-status span').textContent = texto;
   $('#chat-status').hidden = !on;
-  $('#chat-form button').disabled = on;
+  $('#chat-form .send').disabled = on;
+  if (on) $('#chat-status').scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
 
 async function enviar(texto) {
@@ -133,23 +143,35 @@ async function enviar(texto) {
       setBusy(true);
     }
   } catch (e) {
-    log.append(Object.assign(document.createElement('p'), { className: 'msg info', textContent: 'Error: ' + e.message }));
+    setBusy(false);
+    await renderChat();
+    log.append(el('p', 'msg info nuevo', { textContent: 'Error: ' + e.message }));
+    return;
   }
   setBusy(false);
   await renderChat();
 }
 
+const input = $('#chat-input');
+const grow = () => { input.style.height = 'auto'; input.style.height = input.scrollHeight + 'px'; };
+input.oninput = grow;
+// Enter sends on a keyboard; on touch screens Enter is a new line and the arrow sends.
+input.onkeydown = e => {
+  if (e.key === 'Enter' && !e.shiftKey && matchMedia('(pointer: fine)').matches) { e.preventDefault(); $('#chat-form').requestSubmit(); }
+};
 $('#chat-form').onsubmit = e => {
   e.preventDefault();
-  const input = $('#chat-input');
   const texto = input.value.trim();
-  if (!texto) return;
+  if (!texto || $('#chat-form .send').disabled) return;
   input.value = '';
+  grow();
   enviar(texto);
 };
+document.querySelectorAll('.sugerencias button').forEach(b => b.onclick = () => enviar(b.textContent));
 $('#chat-nuevo').onclick = async () => {
   if (hist.length && !await confirmar('¿Empezar una conversación nueva? Los outfits guardados se mantienen.')) return;
   hist = [];
+  shown = 0;
   save();
   renderChat();
 };
