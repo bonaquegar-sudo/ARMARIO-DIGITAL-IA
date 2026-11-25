@@ -44,7 +44,13 @@ jobs:
           npx tauri icon icon.svg
 
       - name: Compilar IPA sin firmar
-        run: npx tauri ios build --ci --no-sign --target aarch64
+        run: |
+          set -o pipefail
+          npx tauri ios build --ci --no-sign --target aarch64 -v 2>&1 | tee build.log || {
+            # Surface the error in public annotations (the raw log needs sign-in).
+            grep -iE 'error|failed|fatal' build.log | tail -15 | sed 's/^/::error::/'
+            tail -25 build.log | tr '\n' '|' | sed 's/^/::error title=tail::/'; echo
+            exit 1; }
 
       - name: Localizar IPA
         run: |
