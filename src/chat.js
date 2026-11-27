@@ -4,7 +4,7 @@ import { confirmar } from './ui.js';
 import * as ai from './ai.js';
 import { consultarTiempo } from './tiempo.js';
 import { SLOTS } from './probador.js';
-import { miniOutfit, probarOutfit } from './outfits.js';
+import { miniOutfit, verOutfit } from './outfits.js';
 
 const $ = s => document.querySelector(s);
 const log = $('#chat-log');
@@ -102,9 +102,9 @@ function mensaje(m, byId) {
   if (m.name === 'guardar_outfit' && r.ok) {
     const card = el('div', 'msg outfit-chat');
     card.append(miniOutfit(r.prendas, byId, urls));
-    card.insertAdjacentHTML('beforeend', '<div class="row"><b></b><button class="push">Probar</button></div>');
+    card.insertAdjacentHTML('beforeend', '<div class="row"><b></b><button class="push">Ver</button></div>');
     card.querySelector('b').textContent = r.nombre;
-    card.querySelector('button.push').onclick = () => probarOutfit(r.prendas);
+    card.querySelector('button.push').onclick = card.querySelector('.mini').onclick = () => verOutfit(r.id);
     return card;
   }
   return null;

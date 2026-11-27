@@ -118,8 +118,8 @@ dialog[open]::backdrop { background: rgb(0 0 0 / .55); animation: fade .3s; }
 @media (max-width: 700px) {
   #prenda-form { grid-template-columns: 1fr; gap: 18px; }
   /* Phone: the garment editor is a bottom sheet */
-  #prenda { width: 100%; max-width: 100%; max-height: 94dvh; margin: auto 0 0; border-radius: 26px 26px 0 0; border-width: 1px 0 0; padding: 22px var(--pad) calc(env(safe-area-inset-bottom) + 20px); }
-  #prenda[open] { animation: sheet .45s var(--ease); }
+  #prenda, #outfit-ver { width: 100%; max-width: 100%; max-height: 94dvh; margin: auto 0 0; border-radius: 26px 26px 0 0; border-width: 1px 0 0; padding: 22px var(--pad) calc(env(safe-area-inset-bottom) + 20px); }
+  :is(#prenda, #outfit-ver)[open] { animation: sheet .45s var(--ease); }
   .foto { max-height: 44dvh; }
 }
 @keyframes sheet { from { transform: translateY(100%); } }
@@ -187,8 +187,7 @@ dialog[open]::backdrop { background: rgb(0 0 0 / .55); animation: fade .3s; }
 @keyframes in-r { from { opacity: 0; transform: translateX(40%) rotate(4deg); } }
 @keyframes in-l { from { opacity: 0; transform: translateX(-40%) rotate(-4deg); } }
 .slot-empty {
-  width: 70%; height: 70%; display: flex; align-items: center; justify-content: center; border-radius: 14px;
-  border: 1.5px dashed var(--line); color: var(--muted); font-size: 10px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; color: var(--muted); opacity: .45; font-size: 10px; font-weight: 800;
   letter-spacing: .1em; text-transform: uppercase; animation: fade .3s;
 }
 .arrow { border: 0; padding: 10px 6px; font-size: 30px; line-height: 1; font-weight: 400; color: var(--muted); background: none; }
@@ -257,6 +256,25 @@ dialog[open]::backdrop { background: rgb(0 0 0 / .55); animation: fade .3s; }
 #ui p { margin: 0 0 18px; white-space: pre-wrap; font-weight: 600; }
 #ui input { margin: 0 0 18px; }
 #ui .row { justify-content: flex-end; }
+
+/* Outfit, enlarged */
+@media (min-width: 701px) { #outfit-ver { width: min(480px, calc(100vw - 32px)); } }
+#outfit-ver .mini { cursor: default; padding: 22px; }
+#outfit-ver .mini:active { transform: none; }
+#outfit-ver .mini img { animation: aparece .6s var(--ease) both; }
+#outfit-ver .outfit-info { padding: 14px 0 16px 4px; }
+#outfit-ver .outfit-info b { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+#outfit-ver .row button { flex: 1; }
+
+/* Probador while editing a saved outfit */
+#editando { display: flex; align-items: center; gap: 10px; margin: -8px 0 18px; padding: 8px 8px 8px 16px; border: 1px solid var(--line); border-radius: 99px; font-size: 14px; animation: up .4s var(--ease); }
+#editando span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#editando button { padding: 6px 14px; font-size: 13px; min-height: 0; }
+
+/* Garments still being processed (added several at once) */
+.card.pendiente .pic { padding: 0; }
+.card.pendiente span { font-weight: 600; color: var(--muted); }
+.card.pendiente.error span { color: var(--fg); }
 
 /* Touch screens: every control at least 44px (Apple's minimum tap target) */
 @media (pointer: coarse) {

@@ -73,17 +73,35 @@ export async function renderProbador() {
   remember();
   document.querySelector('#probador-empty').hidden = items.length > 0;
   root.hidden = items.length === 0;
+  pintarEdicion();
 }
 
-/** Puts an outfit on the mannequin (used by Outfits and the chat). */
-export function ponerOutfit(prendas) {
+// Saved outfit being edited: "Guardar" overwrites it instead of creating a new one.
+let editando = null;
+function pintarEdicion() {
+  document.querySelector('#editando').hidden = !editando;
+  if (editando) document.querySelector('#editando span').textContent = `Editando «${editando.nombre}»`;
+  document.querySelector('#outfit-save').textContent = editando ? 'Guardar cambios' : 'Guardar';
+}
+document.querySelector('#editando-cancelar').onclick = () => { editando = null; pintarEdicion(); };
+
+/** Puts an outfit on the mannequin. Pass the saved outfit to edit it in place. */
+export function ponerOutfit(prendas, outfit = null) {
   sel = Object.fromEntries(SLOTS.map(s => [s.key, prendas[s.key] ?? null]));
+  editando = outfit;
   remember();
 }
 
 export async function guardarOutfit() {
   const prendas = Object.fromEntries(SLOTS.map(s => [s.key, sel[s.key] ?? null]));
   if (!Object.values(prendas).some(Boolean)) return aviso('Elige al menos una prenda.');
+  if (editando) {
+    await db.put('outfits', { ...editando, prendas });
+    const nombre = editando.nombre;
+    editando = null;
+    pintarEdicion();
+    return aviso(`«${nombre}» actualizado.`);
+  }
   const nombre = await pedir('Nombre del outfit:');
   if (nombre === null) return;
   await db.put('outfits', { id: db.newId(), nombre: nombre.trim() || 'Outfit', createdAt: Date.now(), prendas });

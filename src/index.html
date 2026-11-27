@@ -12,7 +12,7 @@
     <section id="armario" class="view">
       <header>
         <div><h1>Armario</h1><span class="muted small" id="armario-count"></span></div>
-        <label class="button primary push">Añadir<input type="file" id="add-input" accept="image/*" hidden></label>
+        <label class="button primary push">Añadir<input type="file" id="add-input" accept="image/*" multiple hidden></label>
       </header>
       <div id="filtros" class="chips"></div>
       <div id="armario-grid" class="grid">
@@ -50,6 +50,7 @@
 
     <section id="probador" class="view" hidden>
       <header><h1>Probador</h1><button id="outfit-save" class="primary push">Guardar</button></header>
+      <div id="editando" hidden><span></span><button type="button" id="editando-cancelar">Cancelar</button></div>
       <div id="maniqui"></div>
       <p id="probador-empty" class="empty" hidden>Añade prendas en el Armario para probártelas aquí.</p>
     </section>
@@ -59,6 +60,15 @@
       <div id="outfits-grid"></div>
       <p id="outfits-empty" class="empty" hidden>Aún no hay outfits. Crea uno en el Probador o pídeselo al Chat.</p>
     </section>
+
+    <dialog id="outfit-ver">
+      <div class="ver-mini"></div>
+      <div class="outfit-info"><div><b></b><span class="muted small"></span></div>
+        <button data-a="renombrar" class="icon" aria-label="Renombrar"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button data-a="eliminar" class="icon" aria-label="Eliminar"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>
+      </div>
+      <div class="row"><button class="primary" data-a="editar">Editar</button><button data-a="cerrar">Cerrar</button></div>
+    </dialog>
 
     <section id="chat" class="view" hidden>
       <header>
