@@ -5,6 +5,7 @@ import * as ai from './ai.js';
 import { consultarTiempo } from './tiempo.js';
 import { SLOTS } from './probador.js';
 import { miniOutfit, verOutfit } from './outfits.js';
+import { iconoTiempo } from './icons.js';
 
 const $ = s => document.querySelector(s);
 const log = $('#chat-log');
@@ -97,8 +98,11 @@ function mensaje(m, byId) {
   if (m.role === 'user') return el('p', 'msg user', { textContent: m.content });
   if (m.role === 'assistant') return m.content?.trim() ? el('div', 'msg bot', { innerHTML: fmt(m.content.trim()) }) : null;
   const r = JSON.parse(m.content);
-  if (m.name === 'consultar_tiempo' && !r.error)
-    return el('p', 'msg info', { textContent: `${r.ciudad} · ${r.fecha} · ${r.cielo} · ${r.min}–${r.max} °C · lluvia ${r.lluvia} %` });
+  if (m.name === 'consultar_tiempo' && !r.error) {
+    const p = el('p', 'msg info', { innerHTML: iconoTiempo(r.cielo) });
+    p.append(`${r.ciudad} · ${r.fecha} · ${r.cielo} · ${r.min}–${r.max} °C · lluvia ${r.lluvia} %`);
+    return p;
+  }
   if (m.name === 'guardar_outfit' && r.ok) {
     const card = el('div', 'msg outfit-chat');
     card.append(miniOutfit(r.prendas, byId, urls));

@@ -1,3 +1,4 @@
+import { icon, CAT_ICON } from './icons.js';
 import * as db from './db.js';
 import { aviso, confirmar } from './ui.js';
 import * as ai from './ai.js';
@@ -55,7 +56,7 @@ async function renderArmario() {
   }));
   $('#armario-count').textContent = all.length ? `${all.length} ${all.length === 1 ? "prenda" : "prendas"}` : '';
   $('#armario-empty').hidden = items.length + pendientes.length > 0;
-  $('#armario-empty').textContent = all.length ? 'Nada en esta categoría.' : 'Tu armario está vacío. Pulsa «Añadir» para hacer una foto.';
+  $('#armario-empty span').textContent = all.length ? 'Nada en esta categoría.' : 'Tu armario está vacío. Pulsa «Añadir» para hacer una foto.';
   $$('#filtros button').forEach(b => b.classList.toggle('on', b.dataset.cat === filtro));
 }
 
@@ -266,7 +267,8 @@ $$('[data-setting]').forEach(input => {
 $$('#theme button').forEach(b => b.onclick = () => { settings.theme = b.dataset.theme; saveSettings(); applyTheme(b.dataset.theme); });
 $$('#tabs button').forEach(b => b.onclick = () => show(b.dataset.view));
 $('#filtros').replaceChildren(...['Todo', ...ai.CATEGORIES].map(cat => {
-  const b = Object.assign(document.createElement('button'), { textContent: cat });
+  const b = document.createElement('button');
+  b.innerHTML = (CAT_ICON[cat] ? icon(CAT_ICON[cat]) : '') + cat;
   b.dataset.cat = cat;
   b.onclick = () => { filtro = cat; renderArmario(); };
   return b;

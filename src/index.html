@@ -12,14 +12,14 @@
     <section id="armario" class="view">
       <header>
         <div><h1>Armario</h1><span class="muted small" id="armario-count"></span></div>
-        <label class="button primary push">Añadir<input type="file" id="add-input" accept="image/*" multiple hidden></label>
+        <label class="button primary push con-icono" data-icon="camara">Añadir<input type="file" id="add-input" accept="image/*" multiple hidden></label>
       </header>
       <div id="filtros" class="chips"></div>
       <div id="armario-grid" class="grid">
         <div class="card"><div class="pic"></div></div><div class="card"><div class="pic"></div></div>
         <div class="card"><div class="pic"></div></div><div class="card"><div class="pic"></div></div>
       </div>
-      <p id="armario-empty" class="empty" hidden></p>
+      <p id="armario-empty" class="empty" data-icon="armario" hidden><span></span></p>
     </section>
 
     <dialog id="prenda">
@@ -52,20 +52,20 @@
       <header><h1>Probador</h1><button id="outfit-save" class="primary push">Guardar</button></header>
       <div id="editando" hidden><span></span><button type="button" id="editando-cancelar">Cancelar</button></div>
       <div id="maniqui"></div>
-      <p id="probador-empty" class="empty" hidden>Añade prendas en el Armario para probártelas aquí.</p>
+      <p id="probador-empty" class="empty" data-icon="probador" hidden>Añade prendas en el Armario para probártelas aquí.</p>
     </section>
 
     <section id="outfits" class="view" hidden>
       <header><h1>Outfits</h1></header>
       <div id="outfits-grid"></div>
-      <p id="outfits-empty" class="empty" hidden>Aún no hay outfits. Crea uno en el Probador o pídeselo al Chat.</p>
+      <p id="outfits-empty" class="empty" data-icon="outfits" hidden>Aún no hay outfits. Crea uno en el Probador o pídeselo al Chat.</p>
     </section>
 
     <dialog id="outfit-ver">
       <div class="ver-mini"></div>
       <div class="outfit-info"><div><b></b><span class="muted small"></span></div>
-        <button data-a="renombrar" class="icon" aria-label="Renombrar"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-        <button data-a="eliminar" class="icon" aria-label="Eliminar"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>
+        <button data-a="renombrar" class="icon" aria-label="Renombrar" data-icon="editar"></button>
+        <button data-a="eliminar" class="icon" aria-label="Eliminar" data-icon="borrar"></button>
       </div>
       <div class="row"><button class="primary" data-a="editar">Editar</button><button data-a="cerrar">Cerrar</button></div>
     </dialog>
@@ -73,12 +73,10 @@
     <section id="chat" class="view" hidden>
       <header>
         <h1>Chat</h1>
-        <button id="chat-nuevo" class="icon push" aria-label="Nueva conversación">
-          <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
-        </button>
+        <button id="chat-nuevo" class="icon push" aria-label="Nueva conversación" data-icon="nuevo"></button>
       </header>
       <div id="chat-empty">
-        <i class="logo"></i>
+        <i class="logo" data-icon="logo"></i>
         <p class="saludo">¿Qué te pones hoy?</p>
         <p class="muted">Conozco tu armario y miro el tiempo por ti.</p>
         <div class="sugerencias">
@@ -88,10 +86,10 @@
         </div>
       </div>
       <div id="chat-log"></div>
-      <div id="chat-status" hidden><i class="logo"></i><span class="shimmer"></span></div>
+      <div id="chat-status" hidden><i class="logo" data-icon="logo"></i><span class="shimmer"></span></div>
       <form id="chat-form">
         <textarea id="chat-input" rows="1" placeholder="Pregunta a tu estilista…"></textarea>
-        <button class="send" aria-label="Enviar"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+        <button class="send" aria-label="Enviar" data-icon="enviar"></button>
       </form>
     </section>
 
@@ -121,11 +119,11 @@
   </main>
 
   <nav id="tabs"><div>
-    <button data-view="armario"><svg viewBox="0 0 24 24"><path d="M10 5.5a2 2 0 1 1 2.8 1.8c-.5.2-.8.7-.8 1.2V9m0 0-8.6 6.2c-1 .7-.5 2.3.7 2.3h15.8c1.2 0 1.7-1.6.7-2.3z"/></svg><span>Armario</span></button>
-    <button data-view="probador"><svg viewBox="0 0 24 24"><path d="M8.5 3 3 6l2 4.5 2-1V21h10V9.5l2 1L21 6l-5.5-3c0 1.9-1.6 3.2-3.5 3.2S8.5 4.9 8.5 3z"/></svg><span>Probador</span></button>
-    <button data-view="outfits"><svg viewBox="0 0 24 24"><path d="m12 3 9.5 4.8L12 12.6 2.5 7.8zM2.5 12.2l9.5 4.8 9.5-4.8M2.5 16.6l9.5 4.8 9.5-4.8"/></svg><span>Outfits</span></button>
-    <button data-view="chat"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.3 7.6L3.5 21l1.4-4.5A8.5 8.5 0 1 1 20.5 12z"/></svg><span>Chat</span></button>
-    <button data-view="ajustes"><svg viewBox="0 0 24 24"><path d="M4 7h9m4 0h3M4 17h3m4 0h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg><span>Ajustes</span></button>
+    <button data-view="armario" data-icon="armario"><span>Armario</span></button>
+    <button data-view="probador" data-icon="probador"><span>Probador</span></button>
+    <button data-view="outfits" data-icon="outfits"><span>Outfits</span></button>
+    <button data-view="chat" data-icon="chat"><span>Chat</span></button>
+    <button data-view="ajustes" data-icon="ajustes"><span>Ajustes</span></button>
   </div></nav>
 </body>
 </html>

@@ -1,6 +1,7 @@
 // Probador: a digital mannequin. Each zone cycles through the items of one category.
 import * as db from './db.js';
 import { aviso, pedir } from './ui.js';
+import { icon, CAT_ICON } from './icons.js';
 
 export const SLOTS = [
   { key: 'cabeza', cat: 'Cabeza', label: 'Cabeza' },
@@ -21,9 +22,9 @@ const remember = () => localStorage.setItem('probador', JSON.stringify(sel));
 
 root.innerHTML = SLOTS.map(s => `
   <div class="slot" data-slot="${s.key}" style="grid-area:${s.key}">
-    <button class="arrow" data-step="-1" aria-label="${s.label}: anterior">‹</button>
-    <div class="ver"><img alt=""><span class="slot-empty">${s.label}</span></div>
-    <button class="arrow" data-step="1" aria-label="${s.label}: siguiente">›</button>
+    <button class="arrow" data-step="-1" aria-label="${s.label}: anterior">${icon('prev')}</button>
+    <div class="ver"><img alt=""><span class="slot-empty" title="${s.label}">${icon(CAT_ICON[s.cat])}</span></div>
+    <button class="arrow" data-step="1" aria-label="${s.label}: siguiente">${icon('next')}</button>
   </div>`).join('');
 root.querySelectorAll('.arrow').forEach(b => b.onclick = () => step(b.closest('.slot').dataset.slot, +b.dataset.step));
 // Swipe sideways on a zone to change the item.
